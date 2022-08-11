@@ -1,10 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
 // middleware
 app.use(express.static('public'));
+// pour parser les donnees json
+app.use(express.json());
 
 // view engine
 app.set('view engine', 'ejs');
@@ -18,3 +21,4 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 // routes
 app.get('/', (req, res) => res.render('home'));
 app.get('/smoothies', (req, res) => res.render('smoothies'));
+app.use(authRoutes);
