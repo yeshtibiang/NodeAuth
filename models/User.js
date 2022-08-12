@@ -22,6 +22,23 @@ const userSchema = new mongoose.Schema({
     },
 })
 
+// lancer une fonction après la sauvegarde d'un document.
+// post refere à quelque chose qui se passe après une autre chose
+userSchema.post('save', function(doc, next) {
+    console.log('user saved');
+    // si next n'est pas mis on risque d'être bloqué à ce niveau
+    next();
+})
+
+// lancer une fonction avant la sauvegarde d'un document.
+userSchema.pre('save', function(next){
+    // on utilise function ici au lieu de arrow function car on veut utiliser this
+    // et que this pointe vers l'objet user
+    console.log("l'utilisateur est en train d'être sauvegardé");
+    next();
+})
+
+
 const User = mongoose.model('user', userSchema);
 
 module.exports = User;
