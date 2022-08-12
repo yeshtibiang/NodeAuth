@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 // validator contient un nombre de fonction qui permettent de valider les donnees
 const {isEmail} = require('validator');
+const bcrypt = require('bcrypt');
 
 
 // pour avoir des erreurs et messages appropié pour chaque attribut la valeur de required sera un tableau 
@@ -22,21 +23,27 @@ const userSchema = new mongoose.Schema({
     },
 })
 
-// lancer une fonction après la sauvegarde d'un document.
-// post refere à quelque chose qui se passe après une autre chose
-userSchema.post('save', function(doc, next) {
-    console.log('user saved');
-    // si next n'est pas mis on risque d'être bloqué à ce niveau
+userSchema.pre('save', async function(next) {
+    const salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, salt);
     next();
 })
 
+// lancer une fonction après la sauvegarde d'un document.
+// post refere à quelque chose qui se passe après une autre chose
+// userSchema.post('save', function(doc, next) {
+//     console.log('user saved');
+     // si next n'est pas mis on risque d'être bloqué à ce niveau
+//     next();
+// })
+
 // lancer une fonction avant la sauvegarde d'un document.
-userSchema.pre('save', function(next){
-    // on utilise function ici au lieu de arrow function car on veut utiliser this
-    // et que this pointe vers l'objet user
-    console.log("l'utilisateur est en train d'être sauvegardé");
-    next();
-})
+// userSchema.pre('save', function(next){
+     // on utilise function ici au lieu de arrow function car on veut utiliser this
+     // et que this pointe vers l'objet user
+//     console.log("l'utilisateur est en train d'être sauvegardé");
+//     next();
+// })
 
 
 const User = mongoose.model('user', userSchema);
