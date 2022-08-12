@@ -1,5 +1,28 @@
 <%- include('partials/header'); -%>
 
-<h1>Registration page</h1>
+<form>
+    <h2>Sign up</h2>
+    <label for="email">Email</label>
+    <input type="text" id="email" name="email" placeholder="Email" required>
+    <div class="email error"></div>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required>
+    <div class="password error"></div>
+    <button>Sign up</button>
+</form>
+<!-- on n'a pas besoin de action au niveau de form puisqu'on va gérer 
+    la soumission du formulaire dans le js
+-->
+<script>
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = form.email.value;
+        const password = form.password.value;
+
+        console.log(email, password);
+    })
+</script>
 
 <%- include('partials/footer'); -%>
