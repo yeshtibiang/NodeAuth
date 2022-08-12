@@ -1,5 +1,41 @@
 const User = require('../models/User');
 
+const handleError = (err) => {
+    console.log(err.message, err.code)
+    let errors = {
+        email: '',
+        password: ''
+    }
+
+    // duplicate error code
+    if (err.code == 11000) {
+        errors.email = 'Email already exists';
+        return errors;
+    }
+
+    // console.log(err.message, err.code); nous permet de voir les erreurs dans la console et les debogger.
+    // on remarque que l'on a user validation failed à chaque fois qu'il y'a des erreurs, donc ce que l'on va faire
+    // c'est de verifier la presence de cela dans le message d'erreur
+    // dans error object on voit une autre propriété appelé errors
+    // on a d'autres propriétés tel que properties un object assez important. 
+    // on veut donc acceder à la propriété errors de l'object error
+    // la propriété path permet de dire quel propriété on veut update
+    // object.values() nous permet d'avoir les valeurs de l'object
+    // maintenant qu'on a les valeurs on peut passer à travaers chaque propriété et prendre les valeur que l'on souhaite.
+    // on aura besoin de la propriété properties. errors.properties
+    // {properties} permet de destructurer l'objet error et donc  
+    if (err.message.includes('user validation failed')){
+        // on destruture error pour avoir les properties
+        Object.values(err.errors).forEach(({properties}) => {
+            // on va mettre a jour notre variable error
+            errors[properties.path] = properties.message;
+        })
+    } 
+
+    return errors;
+
+}
+
 module.exports.signup_get = (req, res) => {
     res.render('signup');
 }
@@ -18,8 +54,9 @@ module.exports.signup_post = async (req, res) => {
         // on renvoie la reponse ici à postman
         res.status(201).json(user);
     } catch (error) {
-        console.log(error)
-        res.status(400).send('error, user not created');
+        const errors = handleError(error);
+        // on renvoie les erreurs à postman via json
+        res.status(400).json({errors});
     }
 }
 
