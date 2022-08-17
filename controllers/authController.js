@@ -107,3 +107,11 @@ module.exports.login_post = async (req, res) => {
         res.status(400).json({errors})
     }
 }
+
+module.exports.logout_get = (req, res) => {
+    // on ne peut pas vraiment supprimer le jwt approprement parlé 
+    // mais on peut juste remplacer le contenu par du vide 
+    // on defini le maxage à 1 milliseconde 
+    res.cookie('jwt', '', {maxAge: 1})
+    res.redirect('/');
+}
