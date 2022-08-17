@@ -29,6 +29,23 @@ userSchema.pre('save', async function(next) {
     next();
 })
 
+// static method pour se connecter
+userSchema.statics.login = async function(email, password) {
+    // on utilise this pour se referer au user model
+    const user = await this.findOne({email});
+    // si on ne trouve pas l'utilisateur on renvoie undifined
+    if (user){
+        // on veut comparer les hash password donc on va hasher le password envoyer
+        const auth = await bcrypt.compare(password, user.password);
+        if (auth){
+            return user;
+        }
+        throw Error('mot de passe incorrect');
+    }
+    throw Error('email incorrect')
+}
+
+
 // lancer une fonction après la sauvegarde d'un document.
 // post refere à quelque chose qui se passe après une autre chose
 // userSchema.post('save', function(doc, next) {

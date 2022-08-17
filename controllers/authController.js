@@ -8,6 +8,16 @@ const handleError = (err) => {
         password: ''
     }
 
+    // email incorrect
+    if (err.message === 'email incorrect'){
+        errors.email = 'ce email n\'existe pas';
+    }
+    
+    // password incorrect
+    if (err.message === 'mot de passe incorrect'){
+        errors.password = 'mot de passe incorrect';
+    }
+
     // duplicate error code
     if (err.code == 11000) {
         errors.email = 'Email already exists';
@@ -77,6 +87,23 @@ module.exports.signup_post = async (req, res) => {
 }
 
 module.exports.login_post = async (req, res) => {
-    console.log(req.body)
-    res.send('user login')
+    const { email, password } = req.body;
+    // ce qu'on veut faire ici c'est prendre email et password et essayer de logger le user 
+    // et ensuite créer le json webtoken  
+    // on va créer une méthode static sur notre model pour se connecter 
+    // on a besoin de créer le jwt si email et password match avec un user et mieux gérer les erreurs 
+    // on crée le token comme on l'a fait pour le signup
+    try {
+        // on va essayer de se connecter 
+        const user = await User.login(email, password);
+        const token = createToken(user._id);
+        // on va placer le token dans un cookie et l'envoyer comme partie de la reponse
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        // si le user est trouvé ici on renvoie le user
+        res.status(200).json({user: user._id});
+    }
+    catch(err){
+        const errors = handleError(err);
+        res.status(400).json({errors})
+    }
 }
