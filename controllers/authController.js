@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 const handleError = (err) => {
     console.log(err.message, err.code)
@@ -36,6 +37,16 @@ const handleError = (err) => {
 
 }
 
+const maxAge = 3 * 24 * 60 * 60;
+// foncion pour creer le jwt token
+const createToken = (id) => {
+    // on passe en premier argument le payload ici l'id de l'utilisateur
+    // le second argument est le secret, on ne le publie pas dans un repo public
+    return jwt.sign({id}, 'net yeshua secret', {
+        expiresIn: maxAge
+    })
+}
+
 module.exports.signup_get = (req, res) => {
     res.render('signup');
 }
@@ -51,8 +62,13 @@ module.exports.signup_post = async (req, res) => {
     try {
         // on crée un nouvel utilisateur
         const user = await User.create({ email, password });
+        // on utilise la fonction createToken ici 
+        const token = createToken(user._id);
+        // on va placer le token dans un cookie et l'envoyer comme partie de la reponse
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+
         // on renvoie la reponse ici à postman
-        res.status(201).json(user);
+        res.status(201).json({user: user._id});
     } catch (error) {
         const errors = handleError(error);
         // on renvoie les erreurs à postman via json

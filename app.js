@@ -29,7 +29,7 @@ app.use(authRoutes);
 
 // cookies theorie 
 //mettre en place un cookie 
-app.get('/set-cookies', (req, res) => {
+// app.get('/set-cookies', (req, res) => {
   // on va utiliser notre cookieParser pour accéder à la cookie
   // on peut passer un troisième argument à cookie pour spécifier différents propriétés
   // maxAge est à un jour, 
@@ -37,17 +37,17 @@ app.get('/set-cookies', (req, res) => {
   // httpOnly à true veut dire que le cookie ne sera pas accessible par les scripts
   // ces deux propriétés sont importantes car en production on veut utiliser les cookies uniquement dans une connexion securisé
   // et on ne veut pas que le client modifie le code. 
-  res.cookie('newUser', false, {maxAge: 1000 * 60 * 60 * 24, httpOnly: true});
-  res.cookie('isEmployee', true)
+  // res.cookie('newUser', false, {maxAge: 1000 * 60 * 60 * 24, httpOnly: true});
+  // res.cookie('isEmployee', true)
   //res.setHeader('set-cookie', 'newUser=true')
-  res.send('cookies set')
-})
+  // res.send('cookies set')
+// })
 
 // on veut lire les cookies on va utiliser la methode req.cookies
 // vu que c'est du js on peutt utiliser le . pour accéder aux propriétés
-app.get('/read-cookies', (req, res) => {
-  const cookies = req.cookies;
-  console.log(cookies.newUser);
+// app.get('/read-cookies', (req, res) => {
+//   const cookies = req.cookies;
+//   console.log(cookies.newUser);
 
-  res.json(cookies)
-})
+//   res.json(cookies)
+// })
