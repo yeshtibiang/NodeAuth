@@ -27,5 +27,38 @@ const requireAuth = (req, res, next) => {
     }
 }
 
+// pour vérifier l'utilisateur courant 
+const checkUser = (req, res, next) => {
+    // obtenir le token
+    const token = req.cookies.jwt;
+    // verifier si le token existe
+    if (token){
+        jwt.verify(token, 'net yeshua secret', async (err, decodedToken) => {
+            if (err){ 
+                console.log(err.message);
+                // on veut explicitement mettre user à null pour eviter les erreurs
+                res.locals.user = null;
+                // on veut pas les rediriger mais juste passer 
+                next();
+            }
+            else{
+                // on veut obtenir les informations du user 
+                // il faut noter que dans le token on a le playload et le playload contient l'id du user. qu'on a pasé à la fonction 
+                // lors de la création du token
+                console.log(decodedToken);
+                let user = await User.findById(decodedToken.id);
+                // maintenant qu'on a le user on veut l'injecter dans la vue 
+                // on peut utiliser quelque chose appeler locals sur la res
+                // on fait res.locals. n'importe quel attrbut que l'on veut injecter à la vue
+                res.locals.user = user;
+                next();
+            }
+        })
+    }else{
+        res.locals.user = null;
+        next();
+    }
+}
+
 //on a créer la fonction qu'on peut mettre devant toutes les routes qui ont besoin d'une authentification 
-module.exports = {requireAuth};
+module.exports = {requireAuth, checkUser};

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser');
-const {requireAuth} = require('./middleware/authMiddleware');
+const {requireAuth, checkUser} = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -24,6 +24,8 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .catch((err) => console.log(err));
 
 // routes
+// on veut appliquer le middleware checkUser à toutes les routes 
+app.get('*', checkUser)
 app.get('/', (req, res) => res.render('home'));
 // on veut faire en sotre que la route /smoothies puisse require une authentification 
 
